@@ -1,0 +1,12 @@
+install air (Live reload for Go apps)
+- go install github.com/cosmtrek/air@latest
+
+create file .air.toml
+- air init
+
+run 
+- air
+
+
+generate key ref : https://delinea.com/resources/password-generator-it-tool 
+- ไม่เอาAllow Symbols (!@#$%^&*()+) 
