@@ -44,12 +44,16 @@ func (s *server) GetServer() *server {
 func (s *server) Start() {
 	// Middleware
 	middlewares := InitMiddlewares(s)
+	s.app.Use(middlewares.Logger())
 	s.app.Use(middlewares.Cors())
+	s.app.Use(middlewares.StreamingFile())
 
 	// Moduls
 	v1 := s.app.Group("v1")
+
 	modules := InitModule(v1, s, middlewares)
 	modules.MonitorModule()
+	modules.UsersModule()
 
 	// Graceful Shutdown
 	c := make(chan os.Signal, 1)

@@ -7,11 +7,14 @@ import (
 	middlewareusecase "github.com/Aritiaya50217/E-CommerceRESTAPIs/modules/middlewares/middlewareUsecase"
 	middlewaresrepositories "github.com/Aritiaya50217/E-CommerceRESTAPIs/modules/middlewares/middlewaresRepositories"
 	monitorhandlers "github.com/Aritiaya50217/E-CommerceRESTAPIs/modules/monitor/monitorHandlers"
-	// usersRepositories "github.com/Aritiaya50217/E-CommerceRESTAPIs/modules/users/usersRepositories"
+	usershandlers "github.com/Aritiaya50217/E-CommerceRESTAPIs/modules/users/usersHandlers"
+	usersRepositories "github.com/Aritiaya50217/E-CommerceRESTAPIs/modules/users/usersRepositories"
+	usersusecases "github.com/Aritiaya50217/E-CommerceRESTAPIs/modules/users/usersUsecases"
 )
 
 type IModuleFactory interface {
 	MonitorModule()
+	UsersModule()
 }
 
 type moduleFactory struct {
@@ -41,6 +44,12 @@ func (m *moduleFactory) MonitorModule() {
 }
 
 func (m *moduleFactory) UsersModule() {
-	// repository := usersRepositories.UsersRepositories()
-	// return repository
+	repository := usersRepositories.UserRepository(m.s.db)
+	usecase := usersusecases.UsersUsecase(m.s.cfg, repository)
+	handler := usershandlers.UsersHandler(m.s.cfg, usecase)
+
+	router := m.r.Group("/users")
+
+	router.Post("/signup", handler.SignUpCustomer)
+
 }

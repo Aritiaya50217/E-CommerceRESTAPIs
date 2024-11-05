@@ -1,0 +1,79 @@
+CREATE TABLE `users` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `username` VARCHAR(255) NOT NULL,
+  `password` VARCHAR(255) NOT NULL,
+  `email` VARCHAR(255) NOT NULL,
+  `role_id` INT NOT NULL,
+  `created_at` TIMESTAMP NOT NULL DEFAULT now(),
+  `updated_at` TIMESTAMP NOT NULL DEFAULT now(),
+   PRIMARY KEY (`id`)
+)ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+CREATE TABLE `oauth` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` VARCHAR(255) NOT NULL,
+  `access_token` VARCHAR(255) NOT NULL,
+  `refresh_token` VARCHAR(255) NOT NULL,
+  `created_at` TIMESTAMP NOT NULL DEFAULT now(),
+  `updated_at` TIMESTAMP NOT NULL DEFAULT now(),
+  PRIMARY KEY (`id`)
+)ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+CREATE TABLE `roles` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `title` VARCHAR(255) NOT NULL,
+ PRIMARY KEY (`id`)
+)ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+CREATE TABLE `products` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `title` VARCHAR(255) NOT NULL,
+  `description` VARCHAR(255) NOT NULL DEFAULT '',
+  `price` FLOAT NOT NULL DEFAULT 0,
+  `created_at` TIMESTAMP NOT NULL DEFAULT now(),
+  `updated_at` TIMESTAMP NOT NULL DEFAULT now(),
+ PRIMARY KEY (`id`)
+)ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+CREATE TABLE `images` (
+  `id` VARCHAR(255) NOT NULL ,
+  `filename` VARCHAR(255) NOT NULL,
+  `url` VARCHAR(255) NOT NULL,
+  `product_id` VARCHAR(255) NOT NULL,
+  `created_at` TIMESTAMP NOT NULL DEFAULT now(),
+  `updated_at` TIMESTAMP NOT NULL DEFAULT now(),
+ PRIMARY KEY (`id`)
+)ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+CREATE TABLE `products_categories` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `product_id` VARCHAR(255) NOT NULL,
+  `category_id` INT NOT NULL,
+ PRIMARY KEY (`id`)
+)ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+CREATE TABLE `categories` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `title` VARCHAR(255) NOT NULL,
+ PRIMARY KEY (`id`)
+)ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+CREATE TABLE `orders` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` VARCHAR(255) NOT NULL,
+  `contact` VARCHAR(255) NOT NULL,
+  `address` VARCHAR(255) NOT NULL,
+  `transfer_slip` VARCHAR(1000) NOT NULL,
+  `status` VARCHAR(1000) NOT NULL,
+  `created_at` TIMESTAMP NOT NULL DEFAULT now(),
+  `updated_at` TIMESTAMP NOT NULL DEFAULT now(),
+ PRIMARY KEY (`id`)
+)ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+CREATE TABLE `products_orders` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `order_id` VARCHAR(255) NOT NULL,
+  `qty` INT NOT NULL DEFAULT 1,
+  `product` VARCHAR(1000),
+ PRIMARY KEY (`id`)
+)ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
