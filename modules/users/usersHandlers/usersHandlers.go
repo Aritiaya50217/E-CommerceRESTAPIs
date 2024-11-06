@@ -25,6 +25,7 @@ type IUsersHandler interface {
 	SignIn(c *fiber.Ctx) error
 	RefreshPassport(c *fiber.Ctx) error
 	SignOut(c *fiber.Ctx) error
+	SignUpAdmin(c *fiber.Ctx) error
 }
 
 type userHandler struct {
@@ -146,4 +147,45 @@ func (h *userHandler) SignOut(c *fiber.Ctx) error {
 		).Res()
 	}
 	return entities.NewResponse(c).Success(fiber.StatusOK, nil).Res()
+}
+
+func (h *userHandler) SignUpAdmin(c *fiber.Ctx) error {
+	// request body parser
+	req := new(users.UserRegisterReq)
+	if err := c.BodyParser(req); err != nil {
+		return entities.NewResponse(c).Error(
+			fiber.ErrBadRequest.Code,
+			string(signUpAdminErr),
+			err.Error(),
+		).Res()
+	}
+
+	// email validation
+	if !req.IsEmail() {
+		return entities.NewResponse(c).Error(
+			fiber.ErrBadRequest.Code,
+			string(signUpCustomerErr),
+			"email pattern is invalid",
+		).Res()
+	}
+	//  Insert
+	result, err := h.usersUsecase.InsertAdmin(req)
+	if err != nil {
+		switch err.Error() {
+		case "username has been used":
+			return entities.NewResponse(c).Error(
+				fiber.ErrBadRequest.Code,
+				string(signUpCustomerErr),
+				err.Error(),
+			).Res()
+		case "email has been used":
+			return entities.NewResponse(c).Error(
+				fiber.ErrBadRequest.Code,
+				string(signUpCustomerErr),
+				err.Error(),
+			).Res()
+		}
+	}
+
+	return entities.NewResponse(c).Success(fiber.StatusCreated, result).Res()
 }
