@@ -12,8 +12,8 @@ CREATE TABLE `users` (
 CREATE TABLE `oauth` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` VARCHAR(255) NOT NULL,
-  `access_token` VARCHAR(255) NOT NULL,
-  `refresh_token` VARCHAR(255) NOT NULL,
+  `access_token` VARCHAR(500) NOT NULL,
+  `refresh_token` VARCHAR(500) NOT NULL,
   `created_at` TIMESTAMP NOT NULL DEFAULT now(),
   `updated_at` TIMESTAMP NOT NULL DEFAULT now(),
   PRIMARY KEY (`id`)

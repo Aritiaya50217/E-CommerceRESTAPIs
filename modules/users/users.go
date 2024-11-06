@@ -26,11 +26,13 @@ type UserCredential struct {
 }
 
 type UserCredentialCheck struct {
-	Id       string `db:"id"`
-	Email    string `db:"email"`
-	Password string `db:"password"`
-	Username string `db:"username"`
-	RoleId   int    `db:"role_id"`
+	Id        string `db:"id"`
+	Email     string `db:"email"`
+	Password  string `db:"password"`
+	Username  string `db:"username"`
+	RoleId    int    `db:"role_id"`
+	CreatedAt string `db:"created_at"`
+	UpdatedAt string `db:"updated_at"`
 }
 
 func (obj *UserRegisterReq) BcryptHashing() error {

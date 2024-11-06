@@ -1,8 +1,6 @@
 package usershandlers
 
 import (
-	"fmt"
-
 	"github.com/Aritiaya50217/E-CommerceRESTAPIs/config"
 	"github.com/Aritiaya50217/E-CommerceRESTAPIs/modules/entities"
 	"github.com/Aritiaya50217/E-CommerceRESTAPIs/modules/users"
@@ -24,6 +22,7 @@ const (
 
 type IUsersHandler interface {
 	SignUpCustomer(c *fiber.Ctx) error
+	SignIn(c *fiber.Ctx) error
 }
 
 type userHandler struct {
@@ -62,7 +61,6 @@ func (h *userHandler) SignUpCustomer(c *fiber.Ctx) error {
 	isDuplicate := h.usersUsecase.GetUserByEamil(req.Email)
 	var result *users.UserPassport
 	var err error
-	fmt.Println(isDuplicate)
 	if !isDuplicate {
 		//  Insert
 		result, err = h.usersUsecase.InsertCustomer(req)
@@ -83,13 +81,27 @@ func (h *userHandler) SignUpCustomer(c *fiber.Ctx) error {
 			}
 		}
 	}
-	//  else {
-	// 	return entities.NewResponse(c).Error(
-	// 		fiber.ErrBadRequest.Code,
-	// 		string(signUpCustomerErr),
-	// 		"email pattern is duplicated",
-	// 	).Res()
-	// }
 
 	return entities.NewResponse(c).Success(fiber.StatusCreated, result).Res()
+}
+
+func (h *userHandler) SignIn(c *fiber.Ctx) error {
+	req := new(users.UserCredential)
+	if err := c.BodyParser(req); err != nil {
+		return entities.NewResponse(c).Error(
+			fiber.ErrBadRequest.Code,
+			string(signInErr),
+			err.Error(),
+		).Res()
+	}
+
+	passport, err := h.usersUsecase.GetPassport(req)
+	if err != nil {
+		return entities.NewResponse(c).Error(
+			fiber.ErrBadRequest.Code,
+			string(signInErr),
+			err.Error(),
+		).Res()
+	}
+	return entities.NewResponse(c).Success(fiber.StatusOK, passport).Res()
 }

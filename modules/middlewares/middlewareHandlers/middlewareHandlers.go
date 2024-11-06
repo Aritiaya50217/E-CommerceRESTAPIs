@@ -6,14 +6,13 @@ import (
 
 	"github.com/Aritiaya50217/E-CommerceRESTAPIs/config"
 	"github.com/Aritiaya50217/E-CommerceRESTAPIs/modules/entities"
-
 	middlewaresUsecase "github.com/Aritiaya50217/E-CommerceRESTAPIs/modules/middlewares/middlewareUsecase"
 	"github.com/Aritiaya50217/E-CommerceRESTAPIs/pkg/auth"
 	"github.com/Aritiaya50217/E-CommerceRESTAPIs/pkg/utils"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
-	filesystem "github.com/gofiber/fiber/v2/middleware/filesystem"
-	logger "github.com/gofiber/fiber/v2/middleware/logger"
+	"github.com/gofiber/fiber/v2/middleware/filesystem"
+	"github.com/gofiber/fiber/v2/middleware/logger"
 )
 
 type middlewareHandlersErrCode string
