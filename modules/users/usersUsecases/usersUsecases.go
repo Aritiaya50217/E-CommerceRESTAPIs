@@ -15,6 +15,7 @@ type IUsersUsecase interface {
 	GetUserByEamil(email string) bool
 	GetPassport(req *users.UserCredential) (*users.UserPassport, error)
 	RefreshPassport(req *users.UserRefreshCredential) (*users.UserPassport, error)
+	DeleteOauth(oauthId string) error
 }
 
 type usersUsecase struct {
@@ -106,14 +107,12 @@ func (u *usersUsecase) RefreshPassport(req *users.UserRefreshCredential) (*users
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println("oauth : ", oauth)
 
 	// find profile
 	profile, err := u.userRepository.GetProfile(oauth.UserId)
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println("profile : ", profile)
 
 	newClaims := &users.UserClaims{
 		Id:     profile.Id,
@@ -127,8 +126,6 @@ func (u *usersUsecase) RefreshPassport(req *users.UserRefreshCredential) (*users
 		newClaims,
 	)
 
-	fmt.Println("accessToken : ", accessToken)
-
 	if err != nil {
 		return nil, err
 	}
@@ -139,8 +136,6 @@ func (u *usersUsecase) RefreshPassport(req *users.UserRefreshCredential) (*users
 		claims.ExpiresAt.Unix(),
 	)
 
-	fmt.Println("refreshToken : ", refreshToken)
-
 	passport := &users.UserPassport{
 		User: profile,
 		Token: &users.UserToken{
@@ -149,10 +144,13 @@ func (u *usersUsecase) RefreshPassport(req *users.UserRefreshCredential) (*users
 			RefreshToken: refreshToken,
 		},
 	}
-	fmt.Println("passport : ", passport)
 
 	if err := u.userRepository.UpdateOauth(passport.Token); err != nil {
 		return nil, err
 	}
 	return passport, nil
+}
+
+func (u *usersUsecase) DeleteOauth(oauthId string) error {
+	return u.userRepository.DeleteOauth(oauthId)
 }
