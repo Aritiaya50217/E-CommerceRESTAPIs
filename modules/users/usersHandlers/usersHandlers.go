@@ -1,10 +1,13 @@
 package usershandlers
 
 import (
+	"strings"
+
 	"github.com/Aritiaya50217/E-CommerceRESTAPIs/config"
 	"github.com/Aritiaya50217/E-CommerceRESTAPIs/modules/entities"
 	"github.com/Aritiaya50217/E-CommerceRESTAPIs/modules/users"
 	usersUsecases "github.com/Aritiaya50217/E-CommerceRESTAPIs/modules/users/usersUsecases"
+	"github.com/Aritiaya50217/E-CommerceRESTAPIs/pkg/auth"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -26,6 +29,8 @@ type IUsersHandler interface {
 	RefreshPassport(c *fiber.Ctx) error
 	SignOut(c *fiber.Ctx) error
 	SignUpAdmin(c *fiber.Ctx) error
+	GenerateAdminToken(c *fiber.Ctx) error
+	GetUserProfile(c *fiber.Ctx) error
 }
 
 type userHandler struct {
@@ -188,4 +193,45 @@ func (h *userHandler) SignUpAdmin(c *fiber.Ctx) error {
 	}
 
 	return entities.NewResponse(c).Success(fiber.StatusCreated, result).Res()
+}
+
+func (h *userHandler) GenerateAdminToken(c *fiber.Ctx) error {
+	adminToken, err := auth.NewAuth(
+		auth.AdminToken,
+		h.cfg.Jwt(),
+		nil,
+	)
+
+	if err != nil {
+		return entities.NewResponse(c).Error(
+			fiber.ErrBadRequest.Code,
+			string(generateAdminTokenErr),
+			err.Error(),
+		).Res()
+	}
+
+	return entities.NewResponse(c).Success(
+		fiber.StatusOK,
+		&struct {
+			Token string `json:"token"`
+		}{
+			Token: adminToken.SignToken(),
+		},
+	).Res()
+}
+
+func (h *userHandler) GetUserProfile(c *fiber.Ctx) error {
+	// set params
+	userId := strings.Trim(c.Params("user_id"), " ")
+
+	// get profile
+	result, err := h.usersUsecase.GetUserProfile(userId)
+	if err != nil {
+		return entities.NewResponse(c).Error(
+			fiber.ErrBadRequest.Code,
+			string(getUserProfileErr),
+			err.Error(),
+		).Res()
+	}
+	return entities.NewResponse(c).Success(fiber.StatusOK, result).Res()
 }

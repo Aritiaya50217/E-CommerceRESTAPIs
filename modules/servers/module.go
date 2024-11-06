@@ -56,4 +56,6 @@ func (m *moduleFactory) UsersModule() {
 	router.Post("/signout", handler.SignOut)
 	router.Post("/signup-admin", handler.SignUpAdmin)
 
+	router.Get("/:user_id", handler.GetUserProfile)
+	router.Get("/admin/secret", handler.GenerateAdminToken)
 }
