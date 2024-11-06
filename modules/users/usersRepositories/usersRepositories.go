@@ -15,6 +15,9 @@ type IUsersRepository interface {
 	GetUserByEamil(email string) bool
 	FindOneUserByEmail(email string) (*users.UserCredentialCheck, error)
 	InsertOauth(req *users.UserPassport) error
+	FindOneOauth(refreshToken string) (*users.Oauth, error)
+	GetProfile(userId string) (*users.User, error)
+	UpdateOauth(req *users.UserToken) error
 }
 
 type userRepository struct {
@@ -89,6 +92,37 @@ func (r *userRepository) InsertOauth(req *users.UserPassport) error {
 		query,
 	); err != nil {
 		return err.Err()
+	}
+	return nil
+}
+
+func (r *userRepository) FindOneOauth(refreshToken string) (*users.Oauth, error) {
+	token := "'%" + refreshToken + "%'"
+	query := "select id , user_id from oauth where refresh_token like " + token
+
+	oauth := new(users.Oauth)
+	if err := r.db.Get(oauth, query); err != nil {
+		return nil, fmt.Errorf("oauth not found")
+	}
+
+	return oauth, nil
+}
+
+func (r *userRepository) GetProfile(userId string) (*users.User, error) {
+	query := "select id,email,username,role_id from users where id = " + userId
+	profile := new(users.User)
+	if err := r.db.Get(profile, query); err != nil {
+		return nil, fmt.Errorf("get user failed: %v", err)
+	}
+	return profile, nil
+}
+
+func (r *userRepository) UpdateOauth(req *users.UserToken) error {
+	query := "update oauth set access_token = " + "'" + req.AccessToken + "'" +
+		", refresh_token = " + "'" + req.RefreshToken + "'" +
+		" where id = " + req.Id
+	if _, err := r.db.NamedExecContext(context.Background(), query, req); err != nil {
+		return fmt.Errorf("update oauth failed: %v", err)
 	}
 	return nil
 }
