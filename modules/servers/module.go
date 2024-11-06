@@ -3,6 +3,9 @@ package servers
 import (
 	"github.com/gofiber/fiber/v2"
 
+	appinfoHandlers "github.com/Aritiaya50217/E-CommerceRESTAPIs/modules/appinfo/appinfoHandlers"
+	appinfoRepositories "github.com/Aritiaya50217/E-CommerceRESTAPIs/modules/appinfo/appinfoRepositories"
+	appinfoUsecases "github.com/Aritiaya50217/E-CommerceRESTAPIs/modules/appinfo/appinfoUsecases"
 	middlewarehandlers "github.com/Aritiaya50217/E-CommerceRESTAPIs/modules/middlewares/middlewareHandlers"
 	middlewareusecase "github.com/Aritiaya50217/E-CommerceRESTAPIs/modules/middlewares/middlewareUsecase"
 	middlewaresrepositories "github.com/Aritiaya50217/E-CommerceRESTAPIs/modules/middlewares/middlewaresRepositories"
@@ -15,6 +18,7 @@ import (
 type IModuleFactory interface {
 	MonitorModule()
 	UsersModule()
+	AppinfoModule()
 }
 
 type moduleFactory struct {
@@ -58,4 +62,15 @@ func (m *moduleFactory) UsersModule() {
 
 	router.Get("/:user_id", handler.GetUserProfile)
 	router.Get("/admin/secret", handler.GenerateAdminToken)
+}
+
+func (m *moduleFactory) AppinfoModule() {
+	repository := appinfoRepositories.AppinfoRepository(m.s.db)
+	usecase := appinfoUsecases.AppinfoUsecase(repository)
+	handler := appinfoHandlers.AppinfoHandler(m.s.cfg, usecase)
+
+	router := m.r.Group("/appinfo")
+	router.Post("/categories", handler.GenerateApiKey)
+	router.Get("/categories", handler.FindCategory)
+
 }
