@@ -3,6 +3,7 @@ package appinforepositories
 import (
 	"context"
 	"fmt"
+	"strconv"
 	"strings"
 
 	"github.com/Aritiaya50217/E-CommerceRESTAPIs/modules/appinfo"
@@ -13,6 +14,7 @@ type IAppinfoRepository interface {
 	FindCategory(req *appinfo.CategoryFilter) ([]*appinfo.Category, error)
 	InsertCategory(req []*appinfo.Category) error
 	DeleteCategory(categoryId int) error
+	UpdateCategory(req *appinfo.Category) error
 }
 
 type appinfoRepository struct {
@@ -87,5 +89,29 @@ func (r *appinfoRepository) DeleteCategory(categoryId int) error {
 	if _, err := r.db.DB.ExecContext(ctx, query, categoryId); err != nil {
 		return fmt.Errorf("delete cateogry failed: %v", err)
 	}
+	return nil
+}
+
+func (r *appinfoRepository) UpdateCategory(req *appinfo.Category) error {
+	ctx := context.Background()
+	tx, err := r.db.BeginTxx(ctx, nil)
+	if err != nil {
+		return err
+	}
+	title := "('" + req.Title + "')"
+	id := strconv.Itoa(req.Id)
+	query := "UPDATE categories SET title = " + title + " where id = " + id
+
+	_, err = tx.QueryxContext(ctx, query)
+	if err != nil {
+		tx.Rollback()
+		return fmt.Errorf("update categories failed: %v", err.Error())
+	}
+
+	if err := tx.Commit(); err != nil {
+		tx.Rollback()
+		return err
+	}
+
 	return nil
 }

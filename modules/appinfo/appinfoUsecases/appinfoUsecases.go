@@ -9,6 +9,7 @@ type IAppinfoUsecase interface {
 	FindCategory(req *appinfo.CategoryFilter) ([]*appinfo.Category, error)
 	InsertCategory(req []*appinfo.Category) error
 	DeleteCategory(categoryId int) error
+	UpdateCategory(req *appinfo.Category) error
 }
 
 type appinfoUsecase struct {
@@ -35,4 +36,8 @@ func (u *appinfoUsecase) InsertCategory(req []*appinfo.Category) error {
 
 func (u *appinfoUsecase) DeleteCategory(categoryId int) error {
 	return u.appinfoRepository.DeleteCategory(categoryId)
+}
+
+func (u *appinfoUsecase) UpdateCategory(req *appinfo.Category) error {
+	return u.appinfoRepository.UpdateCategory(req)
 }

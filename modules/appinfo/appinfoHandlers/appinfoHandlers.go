@@ -18,7 +18,8 @@ const (
 	generateApiKeyErr appinfoHandlersErrCode = "appinfo-001"
 	findCategoryErr   appinfoHandlersErrCode = "appinfo-002"
 	addCategoryErr    appinfoHandlersErrCode = "appinfo-003"
-	removeCategoryErr appinfoHandlersErrCode = "appinfo-004"
+	updateCategoryErr appinfoHandlersErrCode = "appinfo-004"
+	removeCategoryErr appinfoHandlersErrCode = "appinfo-005"
 )
 
 type IAppinfoHandler interface {
@@ -26,6 +27,7 @@ type IAppinfoHandler interface {
 	FindCategory(c *fiber.Ctx) error
 	AddCategory(c *fiber.Ctx) error
 	RemoveCategory(c *fiber.Ctx) error
+	UpdateCategory(c *fiber.Ctx) error
 }
 
 type appinfoHandler struct {
@@ -139,4 +141,24 @@ func (h *appinfoHandler) RemoveCategory(c *fiber.Ctx) error {
 			CategoryId: id,
 		},
 	).Res()
+}
+
+func (h *appinfoHandler) UpdateCategory(c *fiber.Ctx) error {
+	var req *appinfo.Category
+	if err := c.BodyParser(&req); err != nil {
+		return entities.NewResponse(c).Error(
+			fiber.ErrBadRequest.Code,
+			string(updateCategoryErr),
+			err.Error(),
+		).Res()
+	}
+
+	if err := h.appinfoUsecases.UpdateCategory(req); err != nil {
+		return entities.NewResponse(c).Error(
+			fiber.ErrBadRequest.Code,
+			string(updateCategoryErr),
+			err.Error(),
+		).Res()
+	}
+	return entities.NewResponse(c).Success(fiber.StatusOK, nil).Res()
 }
