@@ -70,7 +70,8 @@ func (m *moduleFactory) AppinfoModule() {
 	handler := appinfoHandlers.AppinfoHandler(m.s.cfg, usecase)
 
 	router := m.r.Group("/appinfo")
-	router.Post("/categories", handler.GenerateApiKey)
+
 	router.Get("/categories", handler.FindCategory)
+	router.Post("/categories", handler.AddCategory)
 
 }

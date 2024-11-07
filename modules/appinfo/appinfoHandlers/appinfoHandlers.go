@@ -21,6 +21,7 @@ const (
 type IAppinfoHandler interface {
 	GenerateApiKey(c *fiber.Ctx) error
 	FindCategory(c *fiber.Ctx) error
+	AddCategory(c *fiber.Ctx) error
 }
 
 type appinfoHandler struct {
@@ -77,4 +78,33 @@ func (h *appinfoHandler) FindCategory(c *fiber.Ctx) error {
 		).Res()
 	}
 	return entities.NewResponse(c).Success(fiber.StatusOK, category).Res()
+}
+
+func (h *appinfoHandler) AddCategory(c *fiber.Ctx) error {
+	req := make([]*appinfo.Category, 0)
+	if err := c.BodyParser(&req); err != nil {
+		return entities.NewResponse(c).Error(
+			fiber.ErrBadRequest.Code,
+			string(addCategoryErr),
+			err.Error(),
+		).Res()
+	}
+
+	// check empty
+	if len(req) == 0 {
+		return entities.NewResponse(c).Error(
+			fiber.ErrBadRequest.Code,
+			string(addCategoryErr),
+			"categories request are empty",
+		).Res()
+	}
+
+	if err := h.appinfoUsecases.InsertCategory(req); err != nil {
+		return entities.NewResponse(c).Error(
+			fiber.ErrBadRequest.Code,
+			string(addCategoryErr),
+			err.Error(),
+		).Res()
+	}
+	return entities.NewResponse(c).Success(fiber.StatusCreated, nil).Res()
 }
