@@ -1,6 +1,9 @@
 package appinfohandlers
 
 import (
+	"strconv"
+	"strings"
+
 	"github.com/Aritiaya50217/E-CommerceRESTAPIs/config"
 	"github.com/Aritiaya50217/E-CommerceRESTAPIs/modules/appinfo"
 	appinfoUsecases "github.com/Aritiaya50217/E-CommerceRESTAPIs/modules/appinfo/appinfoUsecases"
@@ -22,6 +25,7 @@ type IAppinfoHandler interface {
 	GenerateApiKey(c *fiber.Ctx) error
 	FindCategory(c *fiber.Ctx) error
 	AddCategory(c *fiber.Ctx) error
+	RemoveCategory(c *fiber.Ctx) error
 }
 
 type appinfoHandler struct {
@@ -107,4 +111,32 @@ func (h *appinfoHandler) AddCategory(c *fiber.Ctx) error {
 		).Res()
 	}
 	return entities.NewResponse(c).Success(fiber.StatusCreated, nil).Res()
+}
+
+func (h *appinfoHandler) RemoveCategory(c *fiber.Ctx) error {
+	categoryIdStr := strings.Trim(c.Params("category_id"), " ")
+	id, err := strconv.Atoi(categoryIdStr)
+	if err != nil {
+		return entities.NewResponse(c).Error(
+			fiber.ErrBadRequest.Code,
+			string(removeCategoryErr),
+			"id type is invalid",
+		).Res()
+	}
+
+	if err := h.appinfoUsecases.DeleteCategory(id); err != nil {
+		return entities.NewResponse(c).Error(
+			fiber.ErrBadRequest.Code,
+			string(removeCategoryErr),
+			err.Error(),
+		).Res()
+	}
+	return entities.NewResponse(c).Success(
+		fiber.StatusOK,
+		&struct {
+			CategoryId int `json:"category_id"`
+		}{
+			CategoryId: id,
+		},
+	).Res()
 }

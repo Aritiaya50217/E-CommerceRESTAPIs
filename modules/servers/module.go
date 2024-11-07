@@ -73,5 +73,6 @@ func (m *moduleFactory) AppinfoModule() {
 
 	router.Get("/categories", handler.FindCategory)
 	router.Post("/categories", handler.AddCategory)
+	router.Delete("/categories/:category_id", handler.RemoveCategory)
 
 }

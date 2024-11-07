@@ -12,6 +12,7 @@ import (
 type IAppinfoRepository interface {
 	FindCategory(req *appinfo.CategoryFilter) ([]*appinfo.Category, error)
 	InsertCategory(req []*appinfo.Category) error
+	DeleteCategory(categoryId int) error
 }
 
 type appinfoRepository struct {
@@ -76,5 +77,15 @@ func (r *appinfoRepository) InsertCategory(req []*appinfo.Category) error {
 		return err
 	}
 
+	return nil
+}
+
+func (r *appinfoRepository) DeleteCategory(categoryId int) error {
+	ctx := context.Background()
+	query := "delete from categories where id = ? "
+
+	if _, err := r.db.DB.ExecContext(ctx, query, categoryId); err != nil {
+		return fmt.Errorf("delete cateogry failed: %v", err)
+	}
 	return nil
 }
