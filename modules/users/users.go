@@ -15,6 +15,7 @@ type User struct {
 }
 
 type UserRegisterReq struct {
+	Id       string `db:"id" json:"id" form:"id"`
 	Email    string `db:"email" json:"email" form:"email"`
 	Password string `db:"password" json:"password" form:"password"`
 	Username string `db:"username" json:"username" form:"username"`

@@ -19,6 +19,7 @@ type IUsersRepository interface {
 	GetProfile(userId string) (*users.User, error)
 	UpdateOauth(req *users.UserToken) error
 	DeleteOauth(oauthId string) error
+	ChangePassword(req *users.UserRegisterReq) error
 }
 
 type userRepository struct {
@@ -134,4 +135,27 @@ func (r *userRepository) DeleteOauth(oauthId string) error {
 		return err
 	}
 	return nil
+}
+
+func (r *userRepository) ChangePassword(req *users.UserRegisterReq) error {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+	defer cancel()
+
+	if err := req.BcryptHashing(); err != nil {
+		return err
+	}
+	now := time.Now().Format("2006-01-02 15:04:05.000")
+
+	query := "update users set password = " + "'" + req.Password + "'," +
+		"updated_at = " + "'" + now + "'" +
+		" where id = " + req.Id
+
+	if err := r.db.QueryRowContext(ctx,
+		query,
+	); err != nil {
+		return err.Err()
+	}
+
+	return nil
+
 }

@@ -18,6 +18,7 @@ type IUsersUsecase interface {
 	DeleteOauth(oauthId string) error
 	InsertAdmin(req *users.UserRegisterReq) (*users.UserPassport, error)
 	GetUserProfile(userId string) (*users.User, error)
+	ChangePassword(req *users.UserRegisterReq) error
 }
 
 type usersUsecase struct {
@@ -174,4 +175,8 @@ func (u *usersUsecase) DeleteOauth(oauthId string) error {
 
 func (u *usersUsecase) GetUserProfile(userId string) (*users.User, error) {
 	return u.userRepository.GetProfile(userId)
+}
+
+func (u *usersUsecase) ChangePassword(req *users.UserRegisterReq) error {
+	return u.userRepository.ChangePassword(req)
 }

@@ -11,16 +11,15 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-type userHandlersErrCode string
-
 const (
-	signUpCustomerErr     userHandlersErrCode = "users-001"
-	signInErr             userHandlersErrCode = "users-002"
-	refreshPassportErr    userHandlersErrCode = "users-003"
-	signOutErr            userHandlersErrCode = "users-004"
-	signUpAdminErr        userHandlersErrCode = "users-005"
-	generateAdminTokenErr userHandlersErrCode = "users-006"
-	getUserProfileErr     userHandlersErrCode = "users-007"
+	signUpCustomerErr     string = "users-001"
+	signInErr             string = "users-002"
+	refreshPassportErr    string = "users-003"
+	signOutErr            string = "users-004"
+	signUpAdminErr        string = "users-005"
+	generateAdminTokenErr string = "users-006"
+	getUserProfileErr     string = "users-007"
+	changePasswordErr     string = "users-008"
 )
 
 type IUsersHandler interface {
@@ -31,6 +30,7 @@ type IUsersHandler interface {
 	SignUpAdmin(c *fiber.Ctx) error
 	GenerateAdminToken(c *fiber.Ctx) error
 	GetUserProfile(c *fiber.Ctx) error
+	ChangePassword(c *fiber.Ctx) error
 }
 
 type userHandler struct {
@@ -234,4 +234,26 @@ func (h *userHandler) GetUserProfile(c *fiber.Ctx) error {
 		).Res()
 	}
 	return entities.NewResponse(c).Success(fiber.StatusOK, result).Res()
+}
+
+func (h *userHandler) ChangePassword(c *fiber.Ctx) error {
+	req := new(users.UserRegisterReq)
+	if err := c.BodyParser(req); err != nil {
+		return entities.NewResponse(c).Error(
+			fiber.ErrBadRequest.Code,
+			changePasswordErr,
+			err.Error(),
+		).Res()
+	}
+
+	if err := h.usersUsecase.ChangePassword(req); err != nil {
+		return entities.NewResponse(c).Error(
+			fiber.ErrBadRequest.Code,
+			changePasswordErr,
+			err.Error(),
+		).Res()
+	}
+
+	return entities.NewResponse(c).Success(fiber.StatusOK, req).Res()
+
 }

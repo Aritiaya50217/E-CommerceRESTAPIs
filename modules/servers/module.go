@@ -62,6 +62,7 @@ func (m *moduleFactory) UsersModule() {
 
 	router.Get("/:user_id", handler.GetUserProfile)
 	router.Get("/admin/secret", handler.GenerateAdminToken)
+	router.Post("/change", handler.ChangePassword)
 }
 
 func (m *moduleFactory) AppinfoModule() {
